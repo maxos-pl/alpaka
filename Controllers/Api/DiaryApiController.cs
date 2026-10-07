@@ -14,6 +14,8 @@ namespace StavZooApp.Controllers.Api
 {
     [ApiController]
     [Route("api/animals/{slug}/diary")]
+    [Route("stav-zoo/api/animals/{slug}/diary")]
+    [Route("stav-zoo/api/diary/{slug}")]
     [Produces("application/json")]
     public class DiaryApiController : ControllerBase
     {

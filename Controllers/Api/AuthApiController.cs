@@ -9,6 +9,7 @@ namespace StavZooApp.Controllers.Api
 {
     [ApiController]
     [Route("api/auth")]
+    [Route("stav-zoo/api/auth")]
     [Produces("application/json")]
     public class AuthApiController : ControllerBase
     {

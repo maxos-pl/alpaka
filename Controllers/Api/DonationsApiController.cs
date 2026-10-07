@@ -12,6 +12,7 @@ namespace StavZooApp.Controllers.Api
 {
     [ApiController]
     [Route("api/donations")]
+    [Route("stav-zoo/api/donations")]
     [Produces("application/json")]
     public class DonationsApiController : ControllerBase
     {

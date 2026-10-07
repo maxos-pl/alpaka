@@ -10,6 +10,7 @@ namespace StavZooApp.Controllers.Api
 {
     [ApiController]
     [Route("api/animals")]
+    [Route("stav-zoo/api/animals")]
     [Produces("application/json")]
     public class AnimalsApiController : ControllerBase
     {
@@ -48,7 +49,7 @@ namespace StavZooApp.Controllers.Api
         }
 
         /// <summary>
-        /// Подробная информация о конкретном животном по его кодовому имени (slug, например "alpaca")
+        /// Подробная информация о конкретном животном по его slug (например "alpaca")
         /// </summary>
         [HttpGet("{slug}")]
         public async Task<ActionResult<AnimalDetailDto>> GetAnimalBySlug(string slug)
@@ -61,7 +62,7 @@ namespace StavZooApp.Controllers.Api
 
             if (animal == null)
             {
-                return NotFound(new { message = $"Животное с идентификатором '{slug}' не найдено" });
+                return NotFound(new { message = $"Животное '{slug}' не найдено" });
             }
 
             var dto = new AnimalDetailDto
@@ -113,6 +114,98 @@ namespace StavZooApp.Controllers.Api
             };
 
             return Ok(dto);
+        }
+
+        /// <summary>
+        /// Паспорт и текстовое описание особи
+        /// </summary>
+        [HttpGet("{slug}/passport")]
+        public async Task<IActionResult> GetPassport(string slug)
+        {
+            var animal = await _db.Animals.FirstOrDefaultAsync(a => a.Slug.ToLower() == slug.ToLower());
+            if (animal == null) return NotFound(new { message = "Особь не найдена" });
+
+            return Ok(new
+            {
+                animal.Id,
+                animal.Slug,
+                animal.Name,
+                animal.Species,
+                animal.LatinName,
+                animal.Family,
+                animal.Origin,
+                animal.EnclosureNumber,
+                animal.Status,
+                animal.BirthDate,
+                animal.ArrivalDate,
+                animal.Description,
+                animal.History,
+                animal.CharacterTraits,
+                animal.DietSummary
+            });
+        }
+
+        /// <summary>
+        /// Фото и видео материалы особи
+        /// </summary>
+        [HttpGet("{slug}/media")]
+        public async Task<IActionResult> GetMedia(string slug)
+        {
+            var animal = await _db.Animals
+                .Include(a => a.MediaItems)
+                .FirstOrDefaultAsync(a => a.Slug.ToLower() == slug.ToLower());
+
+            if (animal == null) return NotFound(new { message = "Особь не найдена" });
+
+            var photos = animal.MediaItems.Where(m => m.MediaType == "photo").Select(m => new
+            {
+                m.Id,
+                m.Title,
+                m.Description,
+                m.MediaUrl,
+                m.ThumbnailUrl
+            });
+
+            var videos = animal.MediaItems.Where(m => m.MediaType == "video").Select(m => new
+            {
+                m.Id,
+                m.Title,
+                m.Description,
+                m.MediaUrl
+            });
+
+            return Ok(new { animal.Name, animal.Species, photos, videos });
+        }
+
+        /// <summary>
+        /// Онлайн веб-камера и расписание активности
+        /// </summary>
+        [HttpGet("{slug}/webcam")]
+        public async Task<IActionResult> GetWebcam(string slug)
+        {
+            var animal = await _db.Animals.FirstOrDefaultAsync(a => a.Slug.ToLower() == slug.ToLower());
+            if (animal == null) return NotFound(new { message = "Особь не найдена" });
+
+            return Ok(new
+            {
+                animal.Name,
+                animal.Species,
+                animal.EnclosureNumber,
+                currentLocation = "Вольер №14 (Общий вид)",
+                webcamStreamUrl = animal.WebcamStreamUrl,
+                availableCameras = new[]
+                {
+                    new { id = 1, name = "Вольер №14 (Общий вид)", streamUrl = animal.WebcamStreamUrl },
+                    new { id = 2, name = "Вольер №14 (Зона кормления)", streamUrl = "/images/alpaca-video.mp4" }
+                },
+                schedule = new[]
+                {
+                    "08:30 - 09:30 — Утреннее кормление сеном и сочными овощами.",
+                    "11:00 - 13:00 — Прогулка и активные игры на открытой площадке.",
+                    "14:30 - 15:30 — Дневной уход, тренинг, угощение морковью.",
+                    "18:00 - 19:00 — Вечернее кормление."
+                }
+            });
         }
     }
 }
