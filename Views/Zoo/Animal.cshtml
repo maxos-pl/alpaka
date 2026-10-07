@@ -1,0 +1,68 @@
+@model StavZooApp.Models.Animal
+@{
+    ViewData["Title"] = $"{Model.Species} ({Model.Name}) - Паспорт и описание";
+}
+
+<h1>@Model.Species (@Model.Name)</h1>
+
+<!-- Навигация по страницам животного -->
+<div>
+    <strong>Разделы страницы животного:</strong><br />
+    1. <b>Паспорт особи и текстовое описание</b> |
+    2. <a href="/stav-zoo/@Model.Slug/media">Фото и видео материалы</a> |
+    3. <a href="/stav-zoo/@Model.Slug/webcam">Наблюдение через веб-камеру (Online)</a> |
+    4. <a href="/stav-zoo/@Model.Slug/diary">Дневник / история особи и популяции</a> |
+    5. <a href="/stav-zoo/@Model.Slug/donate">Донат на корм / лечение (Free donation)</a>
+</div>
+<hr />
+
+<h2>1. Паспорт особи и текстовое описание</h2>
+
+<table border="1" cellpadding="5" cellspacing="0">
+    <tr>
+        <th>Кличка:</th>
+        <td>@Model.Name</td>
+    </tr>
+    <tr>
+        <th>Вид (порода):</th>
+        <td>@Model.Species</td>
+    </tr>
+    <tr>
+        <th>Латинское название:</th>
+        <td><i>@Model.LatinName</i></td>
+    </tr>
+    <tr>
+        <th>Семейство:</th>
+        <td>@Model.Family</td>
+    </tr>
+    <tr>
+        <th>Происхождение:</th>
+        <td>@Model.Origin</td>
+    </tr>
+    <tr>
+        <th>Вольер:</th>
+        <td>@Model.EnclosureNumber</td>
+    </tr>
+    <tr>
+        <th>Статус здоровья:</th>
+        <td>@Model.Status</td>
+    </tr>
+    <tr>
+        <th>Дата рождения:</th>
+        <td>@Model.BirthDate.ToString("dd.MM.yyyy")</td>
+    </tr>
+    <tr>
+        <th>Дата прибытия в зоопарк:</th>
+        <td>@Model.ArrivalDate.ToString("dd.MM.yyyy")</td>
+    </tr>
+</table>
+
+<h3>История конкретной особи:</h3>
+<p style="white-space: pre-line;">@Model.Description</p>
+<p style="white-space: pre-line;">@Model.History</p>
+
+<h3>Характер и повадки:</h3>
+<p>@Model.CharacterTraits</p>
+
+<h3>Рацион питания:</h3>
+<p>@Model.DietSummary</p>

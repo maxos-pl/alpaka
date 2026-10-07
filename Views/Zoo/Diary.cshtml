@@ -1,0 +1,162 @@
+@model StavZooApp.Models.Animal
+@using System.Security.Claims
+@{
+    ViewData["Title"] = $"{Model.Species} ({Model.Name}) - Дневник наблюдений";
+    var userRole = User.FindFirst(ClaimTypes.Role)?.Value ?? "";
+    var isEmployee = userRole == "Employee" || userRole == "Admin";
+}
+
+<h1>@Model.Species (@Model.Name)</h1>
+
+<!-- Навигация по страницам животного -->
+<div>
+    <strong>Разделы страницы животного:</strong><br />
+    1. <a href="/stav-zoo/@Model.Slug">Паспорт особи и текстовое описание</a> |
+    2. <a href="/stav-zoo/@Model.Slug/media">Фото и видео материалы</a> |
+    3. <a href="/stav-zoo/@Model.Slug/webcam">Наблюдение через веб-камеру (Online)</a> |
+    4. <b>Дневник / история особи и популяции</b> |
+    5. <a href="/stav-zoo/@Model.Slug/donate">Донат на корм / лечение (Free donation)</a>
+</div>
+<hr />
+
+<h2>4. Дневник / история особи и популяции</h2>
+<p>В дневнике фиксируются: кормёжка, спаривание, потомство, ветеринарный уход, состояние здоровья.</p>
+
+<!-- Фильтрация -->
+<p>
+    <strong>Фильтр по категориям:</strong>
+    <button type="button" class="diary-filter-btn" data-category="Все">Все</button>
+    <button type="button" class="diary-filter-btn" data-category="Кормёжка">Кормёжка</button>
+    <button type="button" class="diary-filter-btn" data-category="Спаривание">Спаривание</button>
+    <button type="button" class="diary-filter-btn" data-category="Потомство">Потомство</button>
+    <button type="button" class="diary-filter-btn" data-category="Ветеринария">Ветеринария</button>
+    <button type="button" class="diary-filter-btn" data-category="Уход и стрижка">Уход и стрижка</button>
+    <button type="button" class="diary-filter-btn" data-category="Поведение">Поведение</button>
+</p>
+
+<p>
+    Поиск: <input type="text" id="diarySearchInput" placeholder="Поиск по тексту..." />
+</p>
+
+<!-- Форма добавления записи для работников -->
+@if (isEmployee)
+{
+    <fieldset>
+        <legend><b>Добавление записи в дневник (Сотрудник зоопарка)</b></legend>
+        <form id="addDiaryForm">
+            <div id="addDiaryAlert" style="display:none; color: red;"></div>
+
+            <p>
+                <label>Категория: *</label><br />
+                <select name="Category" required>
+                    <option value="Кормёжка">Кормёжка</option>
+                    <option value="Спаривание">Спаривание</option>
+                    <option value="Потомство">Потомство</option>
+                    <option value="Ветеринария">Ветеринария</option>
+                    <option value="Уход и стрижка">Уход и стрижка</option>
+                    <option value="Поведение">Поведение</option>
+                </select>
+            </p>
+
+            <p>
+                <label>Дата и время:</label><br />
+                <input type="datetime-local" name="Date" value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")" />
+            </p>
+
+            <p>
+                <label>Заголовок: *</label><br />
+                <input type="text" name="Title" placeholder="Заголовок события" required style="width: 350px;" />
+            </p>
+
+            <p>
+                <label>Подробное описание: *</label><br />
+                <textarea name="Description" rows="4" cols="50" placeholder="Описание..." required></textarea>
+            </p>
+
+            <p>
+                <label>Статус здоровья:</label><br />
+                <select name="HealthStatus">
+                    <option value="Отличное">Отличное</option>
+                    <option value="Хорошее">Хорошее</option>
+                    <option value="Удовлетворительное">Удовлетворительное</option>
+                    <option value="Под наблюдением">Под наблюдением</option>
+                    <option value="Лечение">Лечение</option>
+                </select>
+            </p>
+
+            <p>
+                <label>Вес (кг):</label><br />
+                <input type="number" step="0.1" name="WeightKg" placeholder="64.5" />
+            </p>
+
+            <p>
+                <label>Температура (°C):</label><br />
+                <input type="number" step="0.1" name="TemperatureC" placeholder="38.4" />
+            </p>
+
+            <p>
+                <label>Рацион / добавки:</label><br />
+                <input type="text" name="DietDetails" placeholder="Люцерна 3кг, морковь..." style="width: 350px;" />
+            </p>
+
+            <p>
+                <input type="submit" value="Сохранить запись в дневник" />
+            </p>
+        </form>
+    </fieldset>
+}
+else
+{
+    <p><i>Для добавления новых записей необходимо войти как работник зоопарка.</i></p>
+}
+
+<h3>Список записей дневника:</h3>
+<table border="1" cellpadding="6" cellspacing="0" id="diaryTable">
+    <thead>
+        <tr>
+            <th>Дата</th>
+            <th>Категория</th>
+            <th>Заголовок и описание</th>
+            <th>Показатели здоровья / Рацион</th>
+            <th>Автор</th>
+            @if (isEmployee)
+            {
+                <th>Действие</th>
+            }
+        </tr>
+    </thead>
+    <tbody id="diaryTableBody">
+        @foreach (var entry in Model.DiaryEntries)
+        {
+            <tr id="diary-row-@entry.Id">
+                <td>@entry.Date.ToString("dd.MM.yyyy HH:mm")</td>
+                <td><b>@entry.Category</b></td>
+                <td>
+                    <b>@entry.Title</b>
+                    <p><small>@entry.Description</small></p>
+                </td>
+                <td>
+                    <small>
+                        Здоровье: @entry.HealthStatus<br />
+                        @if (entry.WeightKg.HasValue) { <span>Вес: @entry.WeightKg кг<br /></span> }
+                        @if (entry.TemperatureC.HasValue) { <span>Температура: @entry.TemperatureC °C<br /></span> }
+                        @if (!string.IsNullOrEmpty(entry.DietDetails)) { <span>Рацион: @entry.DietDetails</span> }
+                    </small>
+                </td>
+                <td>@entry.AuthorName</td>
+                @if (isEmployee)
+                {
+                    <td>
+                        <button type="button" onclick="deleteDiaryEntry(@entry.Id)">Удалить</button>
+                    </td>
+                }
+            </tr>
+        }
+    </tbody>
+</table>
+
+<p>
+    Экспорт дневника: 
+    <button type="button" id="exportDiaryJsonBtn">Скачать JSON</button>
+    <button type="button" id="exportDiaryCsvBtn">Скачать CSV</button>
+</p>

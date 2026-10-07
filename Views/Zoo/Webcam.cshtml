@@ -1,0 +1,45 @@
+@model StavZooApp.Models.Animal
+@{
+    ViewData["Title"] = $"{Model.Species} ({Model.Name}) - Веб-камера (Online)";
+}
+
+<h1>@Model.Species (@Model.Name)</h1>
+
+<!-- Навигация по страницам животного -->
+<div>
+    <strong>Разделы страницы животного:</strong><br />
+    1. <a href="/stav-zoo/@Model.Slug">Паспорт особи и текстовое описание</a> |
+    2. <a href="/stav-zoo/@Model.Slug/media">Фото и видео материалы</a> |
+    3. <b>Наблюдение через веб-камеру (Online)</b> |
+    4. <a href="/stav-zoo/@Model.Slug/diary">Дневник / история особи и популяции</a> |
+    5. <a href="/stav-zoo/@Model.Slug/donate">Донат на корм / лечение (Free donation)</a>
+</div>
+<hr />
+
+<h2>3. Наблюдение через веб-камеру (Online)</h2>
+
+<p>
+    Время трансляции: <span id="webcamClock"><b>--:--:--</b></span> | 
+    Текущий ракурс: <span id="camLocationText"><b>Вольер №14 (Общий вид)</b></span>
+</p>
+
+<div>
+    <video id="alpacaLivePlayer" width="600" height="360" autoplay muted loop playsinline controls style="background:#000;">
+        <source src="@Model.WebcamStreamUrl" type="video/mp4" />
+        Ваш браузер не поддерживает видеопоток.
+    </video>
+</div>
+
+<p>
+    <strong>Переключение ракурса:</strong>
+    <button type="button" class="cam-switch-btn" data-cam-name="Вольер №14 (Общий вид)" data-stream-src="@Model.WebcamStreamUrl">Камера 1 (Общий вид)</button>
+    <button type="button" class="cam-switch-btn" data-cam-name="Вольер №14 (Кормушка)" data-stream-src="https://assets.mixkit.co/videos/preview/mixkit-llama-eating-grass-in-a-field-42750-large.mp4">Камера 2 (Зона кормления)</button>
+</p>
+
+<h3>Расписание активности в вольере:</h3>
+<ul>
+    <li>08:30 - 09:30 — Утреннее кормление сеном и сочными овощами.</li>
+    <li>11:00 - 13:00 — Прогулка и активные игры на открытой площадке.</li>
+    <li>14:30 - 15:30 — Дневной уход, тренинг, угощение морковью.</li>
+    <li>18:00 - 19:00 — Вечернее кормление.</li>
+</ul>

@@ -1,0 +1,63 @@
+@using System.Security.Claims
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Ставропольский зоопарк</title>
+</head>
+<body data-user-role="@(User.FindFirst(ClaimTypes.Role)?.Value ?? "Guest")">
+    <header>
+        <h2>Ставропольский зоопарк — Альпака</h2>
+        <nav>
+            <a href="/stav-zoo">Главная</a> |
+            <a href="/stav-zoo/alpaca">Паспорт и описание</a> |
+            <a href="/stav-zoo/alpaca/media">Фото и видео</a> |
+            <a href="/stav-zoo/alpaca/webcam">Веб-камера (Online)</a> |
+            <a href="/stav-zoo/alpaca/diary">Дневник наблюдений</a> |
+            <a href="/stav-zoo/alpaca/donate">Донат на корм/лечение</a> |
+            <a href="/swagger" target="_blank">Swagger API</a>
+        </nav>
+        <hr />
+        <div>
+            @if (User.Identity != null && User.Identity.IsAuthenticated)
+            {
+                var userRole = User.FindFirst(ClaimTypes.Role)?.Value ?? "Посетитель";
+                var position = User.FindFirst("Position")?.Value ?? userRole;
+                <p>
+                    Пользователь: <b>@User.Identity.Name</b> | Роль: <b>@userRole</b> | Должность: <b>@position</b> |
+                    <a asp-controller="Auth" asp-action="Logout">Выйти</a>
+                </p>
+            }
+            else
+            {
+                <p>
+                    Статус: <i>Не авторизован (Гость)</i> |
+                    <a asp-controller="Auth" asp-action="Login">Войти</a> | 
+                    <a asp-controller="Auth" asp-action="Register">Регистрация</a> |
+                    Быстрый вход:
+                    <form asp-controller="Auth" asp-action="DemoLogin" asp-route-role="employee" method="post" style="display:inline;">
+                        <input type="submit" value="Сотрудник (Зоотехник)" />
+                    </form>
+                    <form asp-controller="Auth" asp-action="DemoLogin" asp-route-role="guest" method="post" style="display:inline;">
+                        <input type="submit" value="Посетитель" />
+                    </form>
+                </p>
+            }
+        </div>
+        <hr />
+    </header>
+
+    <main>
+        @RenderBody()
+    </main>
+
+    <hr />
+    <footer>
+        <p><small>Веб-приложение зоопарка. Вариант: Альпака.</small></p>
+    </footer>
+
+    <script src="~/js/zoo-alpaca.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

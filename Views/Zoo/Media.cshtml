@@ -1,0 +1,44 @@
+@model StavZooApp.Models.Animal
+@{
+    ViewData["Title"] = $"{Model.Species} ({Model.Name}) - Фото и видео";
+}
+
+<h1>@Model.Species (@Model.Name)</h1>
+
+<!-- Навигация по страницам животного -->
+<div>
+    <strong>Разделы страницы животного:</strong><br />
+    1. <a href="/stav-zoo/@Model.Slug">Паспорт особи и текстовое описание</a> |
+    2. <b>Фото и видео материалы</b> |
+    3. <a href="/stav-zoo/@Model.Slug/webcam">Наблюдение через веб-камеру (Online)</a> |
+    4. <a href="/stav-zoo/@Model.Slug/diary">Дневник / история особи и популяции</a> |
+    5. <a href="/stav-zoo/@Model.Slug/donate">Донат на корм / лечение (Free donation)</a>
+</div>
+<hr />
+
+<h2>2. Фото и видео материалы</h2>
+
+<h3>Фотографии:</h3>
+@foreach (var photo in Model.MediaItems.Where(m => m.MediaType == "photo"))
+{
+    <div style="margin-bottom: 20px;">
+        <img src="@photo.MediaUrl" alt="@photo.Title" width="350" /><br />
+        <strong>@photo.Title</strong><br />
+        <small>@photo.Description</small>
+    </div>
+}
+
+<hr />
+
+<h3>Видеозаписи:</h3>
+@foreach (var video in Model.MediaItems.Where(m => m.MediaType == "video"))
+{
+    <div style="margin-bottom: 20px;">
+        <video controls width="500">
+            <source src="@video.MediaUrl" type="video/mp4" />
+            Ваш браузер не поддерживает встроенное видео.
+        </video><br />
+        <strong>@video.Title</strong><br />
+        <small>@video.Description</small>
+    </div>
+}

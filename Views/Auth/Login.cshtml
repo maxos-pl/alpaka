@@ -1,0 +1,45 @@
+@model StavZooApp.DTOs.LoginDto
+@{
+    ViewData["Title"] = "Вход в систему";
+}
+
+<h1>Вход в систему зоопарка</h1>
+
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="alert-box" style="background-color: #fee; border-color: #ecc; color: #a00;">
+        @Html.ValidationSummary(false, "")
+    </div>
+}
+
+<fieldset style="max-width: 450px;">
+    <legend><strong>Форма авторизации</strong></legend>
+    <form asp-action="Login" method="post">
+        <input type="hidden" name="returnUrl" value="@ViewBag.ReturnUrl" />
+
+        <label asp-for="Email">Email:</label>
+        <input asp-for="Email" placeholder="keeper@stavzoo.ru" required />
+
+        <label asp-for="Password">Пароль:</label>
+        <input asp-for="Password" type="password" required />
+
+        <div>
+            <button type="submit">Войти</button>
+        </div>
+    </form>
+</fieldset>
+
+<fieldset style="max-width: 450px;">
+    <legend><strong>Быстрый вход для тестирования:</strong></legend>
+    <form asp-action="DemoLogin" asp-route-role="employee" method="post" style="margin-bottom: 8px;">
+        <button type="submit">Войти как Зоотехник (keeper@stavzoo.ru)</button>
+    </form>
+    <form asp-action="DemoLogin" asp-route-role="vet" method="post" style="margin-bottom: 8px;">
+        <button type="submit">Войти как Главветврач (vet@stavzoo.ru)</button>
+    </form>
+    <form asp-action="DemoLogin" asp-route-role="guest" method="post">
+        <button type="submit">Войти как Посетитель (guest@mail.ru)</button>
+    </form>
+</fieldset>
+
+<p>Нет аккаунта? <a asp-action="Register">Зарегистрироваться</a></p>

@@ -1,0 +1,45 @@
+@model StavZooApp.DTOs.RegisterDto
+@{
+    ViewData["Title"] = "Регистрация";
+}
+
+<h1>Регистрация нового пользователя</h1>
+
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="alert-box" style="background-color: #fee; border-color: #ecc; color: #a00;">
+        @Html.ValidationSummary(false, "")
+    </div>
+}
+
+<fieldset style="max-width: 450px;">
+    <legend><strong>Регистрационная форма</strong></legend>
+    <form asp-action="Register" method="post">
+        <label asp-for="FullName">ФИО / Имя: *</label>
+        <input asp-for="FullName" placeholder="Иван Иванов" required />
+
+        <label asp-for="Username">Логин: *</label>
+        <input asp-for="Username" placeholder="ivan_i" required />
+
+        <label asp-for="Email">Email: *</label>
+        <input asp-for="Email" placeholder="ivan@mail.ru" required />
+
+        <label asp-for="Password">Пароль (от 6 символов): *</label>
+        <input asp-for="Password" type="password" required />
+
+        <label asp-for="Role">Роль пользователя:</label>
+        <select asp-for="Role">
+            <option value="User">Посетитель (гость)</option>
+            <option value="Employee">Сотрудник зоопарка (доступ к дневнику)</option>
+        </select>
+
+        <label asp-for="Position">Должность (для работников):</label>
+        <input asp-for="Position" value="Посетитель" />
+
+        <div>
+            <button type="submit">Зарегистрироваться</button>
+        </div>
+    </form>
+</fieldset>
+
+<p>Уже зарегистрированы? <a asp-action="Login">Войти</a></p>

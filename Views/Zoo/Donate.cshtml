@@ -1,0 +1,86 @@
+@model StavZooApp.Models.Animal
+@{
+    ViewData["Title"] = $"{Model.Species} ({Model.Name}) - Донат на корм и лечение";
+    var totalDonations = Model.Donations.Sum(d => d.Amount);
+}
+
+<h1>@Model.Species (@Model.Name)</h1>
+
+<!-- Навигация по страницам животного -->
+<div>
+    <strong>Разделы страницы животного:</strong><br />
+    1. <a href="/stav-zoo/@Model.Slug">Паспорт особи и текстовое описание</a> |
+    2. <a href="/stav-zoo/@Model.Slug/media">Фото и видео материалы</a> |
+    3. <a href="/stav-zoo/@Model.Slug/webcam">Наблюдение через веб-камеру (Online)</a> |
+    4. <a href="/stav-zoo/@Model.Slug/diary">Дневник / история особи и популяции</a> |
+    5. <b>Донат на корм / лечение (Free donation)</b>
+</div>
+<hr />
+
+<h2>5. Донат на корм / лечение (Free donation)</h2>
+
+<p>
+    Всего собрано пожертвований: <b id="totalRaisedText">@totalDonations.ToString("N0") ₽</b><br />
+    Количество благотворителей: <b id="donorsCountText">@Model.Donations.Count</b>
+</p>
+
+<fieldset style="max-width: 450px;">
+    <legend><b>Отправить пожертвование</b></legend>
+    <form id="donationForm">
+        <div id="donationAlert" style="display:none; color: green; margin-bottom: 10px;"></div>
+
+        <p>
+            <label>Сумма пожертвования (₽): *</label><br />
+            <input type="number" id="donationAmountInput" min="10" step="10" value="500" required />
+        </p>
+
+        <p>
+            <label>Назначение пожертвования:</label><br />
+            <select id="donationTargetSelect">
+                <option value="Корм и лакомства">Корм и лакомства (морковь, яблоки, сено)</option>
+                <option value="Витамины и лечение">Витамины, медикаменты и лечение</option>
+                <option value="Обустройство вольера">Обустройство вольера и тёплый домик</option>
+                <option value="Свободный донат">Свободный донат на любые нужды</option>
+            </select>
+        </p>
+
+        <p>
+            <label>Имя или псевдоним:</label><br />
+            <input type="text" id="donorNameInput" placeholder="Аноним" value="@(User.Identity?.IsAuthenticated == true ? User.Identity.Name : "")" />
+        </p>
+
+        <p>
+            <label>Сообщение / пожелание:</label><br />
+            <textarea id="donorMessageInput" rows="3" cols="40" placeholder="Ваше сообщение..."></textarea>
+        </p>
+
+        <p>
+            <input type="submit" value="Отправить пожертвование" />
+        </p>
+    </form>
+</fieldset>
+
+<h3>История пожертвований:</h3>
+<table border="1" cellpadding="6" cellspacing="0" style="max-width: 750px;">
+    <thead>
+        <tr>
+            <th>Дата</th>
+            <th>Имя благотворителя</th>
+            <th>Сумма</th>
+            <th>Назначение</th>
+            <th>Сообщение</th>
+        </tr>
+    </thead>
+    <tbody id="recentDonationsList">
+        @foreach (var d in Model.Donations.OrderByDescending(x => x.CreatedAt))
+        {
+            <tr>
+                <td>@d.CreatedAt.ToString("dd.MM.yyyy HH:mm")</td>
+                <td>@d.DonorName</td>
+                <td><b>+@d.Amount.ToString("N0") ₽</b></td>
+                <td>@d.Target</td>
+                <td>@(d.Message ?? "-")</td>
+            </tr>
+        }
+    </tbody>
+</table>
