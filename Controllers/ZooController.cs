@@ -90,6 +90,15 @@ namespace StavZooApp.Controllers
             return View(animal);
         }
 
+        // Страница документации и тестирования API: /stav-zoo/api
+        [Route("stav-zoo/api")]
+        [Route("api")]
+        [HttpGet]
+        public IActionResult ApiDocs()
+        {
+            return View();
+        }
+
         // Редирект с корня / на /stav-zoo
         [Route("")]
         [HttpGet]

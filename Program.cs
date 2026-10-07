@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
 using StavZooApp.Data;
 using StavZooApp.Services;
 
@@ -68,42 +67,6 @@ builder.Services.AddControllersWithViews()
         options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
     });
 
-// 5. Swagger / OpenAPI Documentation
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(c =>
-{
-    c.SwaggerDoc("v1", new OpenApiInfo
-    {
-        Title = "Ставропольский зоопарк API — Страничка Альпаки и Дневник",
-        Version = "v1",
-        Description = "REST API для доступа к информации о животных зоопарка (Альпака Пако и Лола), дневнику наблюдений сотрудников, видео/вебкамерам и пожертвованиям."
-    });
-
-    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-    {
-        Description = "Введите JWT-токен в формате: Bearer {ваш_токен}",
-        Name = "Authorization",
-        In = ParameterLocation.Header,
-        Type = SecuritySchemeType.ApiKey,
-        Scheme = "Bearer"
-    });
-
-    c.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
-        {
-            new OpenApiSecurityScheme
-            {
-                Reference = new OpenApiReference
-                {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = "Bearer"
-                }
-            },
-            Array.Empty<string>()
-        }
-    });
-});
-
 var app = builder.Build();
 
 // Database initialization and seeding
@@ -119,13 +82,6 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
-
-app.UseSwagger();
-app.UseSwaggerUI(c =>
-{
-    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Stavropol Zoo API v1");
-    c.RoutePrefix = "swagger";
-});
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();

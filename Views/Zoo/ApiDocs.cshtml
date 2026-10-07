@@ -1,0 +1,269 @@
+@{
+    ViewData["Title"] = "REST API Зоопарка - Документация";
+}
+
+<h1>REST API Ставропольского Зоопарка</h1>
+<p>Документация и интерактивная консоль тестирования API.</p>
+
+<hr />
+
+<h2>1. Список эндпоинтов API</h2>
+
+<table border="1" cellpadding="6" cellspacing="0">
+    <thead>
+        <tr>
+            <th>Метод</th>
+            <th>URL эндпоинта</th>
+            <th>Описание</th>
+            <th>Права доступа</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><b>GET</b></td>
+            <td><code>/stav-zoo/api/animals/alpaca/passport</code></td>
+            <td>Получение паспорта и текстового описания альпаки</td>
+            <td>Публичный</td>
+        </tr>
+        <tr>
+            <td><b>GET</b></td>
+            <td><code>/stav-zoo/api/animals/alpaca/media</code></td>
+            <td>Список фотографий и видеоматериалов</td>
+            <td>Публичный</td>
+        </tr>
+        <tr>
+            <td><b>GET</b></td>
+            <td><code>/stav-zoo/api/animals/alpaca/webcam</code></td>
+            <td>Поток веб-камеры, список камер и расписание</td>
+            <td>Публичный</td>
+        </tr>
+        <tr>
+            <td><b>GET</b></td>
+            <td><code>/stav-zoo/api/animals/alpaca/diary</code></td>
+            <td>Список записей дневника (параметры: <code>?category=...&search=...</code>)</td>
+            <td>Публичный</td>
+        </tr>
+        <tr>
+            <td><b>POST</b></td>
+            <td><code>/stav-zoo/api/animals/alpaca/diary</code></td>
+            <td>Создание новой записи в дневник (кормёжка, спаривание, потомство, уход)</td>
+            <td><b>Работники (Employee / JWT)</b></td>
+        </tr>
+        <tr>
+            <td><b>PUT</b></td>
+            <td><code>/stav-zoo/api/animals/alpaca/diary/{id}</code></td>
+            <td>Редактирование записи дневника по ID</td>
+            <td><b>Работники (Employee / JWT)</b></td>
+        </tr>
+        <tr>
+            <td><b>DELETE</b></td>
+            <td><code>/stav-zoo/api/animals/alpaca/diary/{id}</code></td>
+            <td>Удаление записи дневника по ID</td>
+            <td><b>Работники (Employee / JWT)</b></td>
+        </tr>
+        <tr>
+            <td><b>GET</b></td>
+            <td><code>/stav-zoo/api/donations/alpaca</code></td>
+            <td>Сводка пожертвований и история донатов</td>
+            <td>Публичный</td>
+        </tr>
+        <tr>
+            <td><b>POST</b></td>
+            <td><code>/stav-zoo/api/donations</code></td>
+            <td>Отправка благотворительного пожертвования (Free donation)</td>
+            <td>Публичный</td>
+        </tr>
+        <tr>
+            <td><b>POST</b></td>
+            <td><code>/stav-zoo/api/auth/login</code></td>
+            <td>Аутентификация пользователя и получение JWT токена</td>
+            <td>Публичный</td>
+        </tr>
+        <tr>
+            <td><b>POST</b></td>
+            <td><code>/stav-zoo/api/auth/register</code></td>
+            <td>Регистрация нового пользователя</td>
+            <td>Публичный</td>
+        </tr>
+        <tr>
+            <td><b>GET</b></td>
+            <td><code>/stav-zoo/api/auth/me</code></td>
+            <td>Получение профиля текущего пользователя</td>
+            <td>Авторизованный (JWT / Cookie)</td>
+        </tr>
+    </tbody>
+</table>
+
+<hr />
+
+<h2>2. Интерактивная консоль тестирования API</h2>
+
+<fieldset style="max-width: 650px;">
+    <legend><b>Консоль отправки запросов</b></legend>
+
+    <p>
+        <label>Быстрый выбор шаблона эндпоинта:</label><br />
+        <select id="apiPresetSelect" onchange="applyPreset()" style="width: 100%;">
+            <option value="passport">GET /stav-zoo/api/animals/alpaca/passport (Паспорт особи)</option>
+            <option value="media">GET /stav-zoo/api/animals/alpaca/media (Фото и видео)</option>
+            <option value="webcam">GET /stav-zoo/api/animals/alpaca/webcam (Веб-камера)</option>
+            <option value="diary_get">GET /stav-zoo/api/animals/alpaca/diary (Записи дневника)</option>
+            <option value="diary_post">POST /stav-zoo/api/animals/alpaca/diary (Создать запись в дневник)</option>
+            <option value="donations_get">GET /stav-zoo/api/donations/alpaca (История донатов)</option>
+            <option value="donation_post">POST /stav-zoo/api/donations (Отправить донат)</option>
+            <option value="login">POST /stav-zoo/api/auth/login (Вход работником / JWT)</option>
+            <option value="me">GET /stav-zoo/api/auth/me (Текущий профиль)</option>
+        </select>
+    </p>
+
+    <p>
+        <label>HTTP Метод:</label><br />
+        <select id="apiMethod">
+            <option value="GET">GET</option>
+            <option value="POST">POST</option>
+            <option value="PUT">PUT</option>
+            <option value="DELETE">DELETE</option>
+        </select>
+    </p>
+
+    <p>
+        <label>URL адрес запроса:</label><br />
+        <input type="text" id="apiUrl" value="/stav-zoo/api/animals/alpaca/passport" style="width: 100%;" />
+    </p>
+
+    <p>
+        <label>JWT Токен (для защищённых методов):</label><br />
+        <input type="text" id="apiToken" placeholder="Вставьте токен или оставьте пустым..." style="width: 100%;" />
+    </p>
+
+    <p>
+        <label>Тело запроса (JSON для POST / PUT):</label><br />
+        <textarea id="apiBody" rows="6" style="width: 100%; font-family: monospace;"></textarea>
+    </p>
+
+    <p>
+        <button type="button" onclick="executeApiCall()">Выполнить API-запрос</button>
+    </p>
+</fieldset>
+
+<h3>Ответ сервера:</h3>
+<p>
+    Статус ответа: <b id="apiResponseStatus">-</b> | Время выполнения: <span id="apiResponseTime">-</span>
+</p>
+
+<pre id="apiResponseBody" style="background: #f4f4f4; border: 1px solid #ccc; padding: 10px; max-height: 400px; overflow: auto;">
+Нажмите "Выполнить API-запрос" для получения результата.
+</pre>
+
+@section Scripts {
+<script>
+    const presets = {
+        passport: { method: 'GET', url: '/stav-zoo/api/animals/alpaca/passport', body: '' },
+        media: { method: 'GET', url: '/stav-zoo/api/animals/alpaca/media', body: '' },
+        webcam: { method: 'GET', url: '/stav-zoo/api/animals/alpaca/webcam', body: '' },
+        diary_get: { method: 'GET', url: '/stav-zoo/api/animals/alpaca/diary', body: '' },
+        diary_post: {
+            method: 'POST',
+            url: '/stav-zoo/api/animals/alpaca/diary',
+            body: JSON.stringify({
+                category: "Кормёжка",
+                title: "Выдача свежей моркови",
+                description: "Пако и Лола получили порцию овощей и витаминов.",
+                healthStatus: "Отличное",
+                dietDetails: "Морковь 500г, яблоки 200г",
+                weightKg: 64.6,
+                temperatureC: 38.3
+            }, null, 2)
+        },
+        donations_get: { method: 'GET', url: '/stav-zoo/api/donations/alpaca', body: '' },
+        donation_post: {
+            method: 'POST',
+            url: '/stav-zoo/api/donations',
+            body: JSON.stringify({
+                animalSlug: "alpaca",
+                donorName: "Тестовый донатор",
+                amount: 1000,
+                target: "Корм и лакомства",
+                message: "Привет Пако и Лоле!"
+            }, null, 2)
+        },
+        login: {
+            method: 'POST',
+            url: '/stav-zoo/api/auth/login',
+            body: JSON.stringify({
+                email: "keeper@stavzoo.ru",
+                password: "Password123!"
+            }, null, 2)
+        },
+        me: { method: 'GET', url: '/stav-zoo/api/auth/me', body: '' }
+    };
+
+    function applyPreset() {
+        const val = document.getElementById('apiPresetSelect').value;
+        const p = presets[val];
+        if (p) {
+            document.getElementById('apiMethod').value = p.method;
+            document.getElementById('apiUrl').value = p.url;
+            document.getElementById('apiBody').value = p.body;
+        }
+    }
+
+    async function executeApiCall() {
+        const method = document.getElementById('apiMethod').value;
+        const url = document.getElementById('apiUrl').value;
+        const token = document.getElementById('apiToken').value.trim() || getAuthToken();
+        const bodyText = document.getElementById('apiBody').value.trim();
+
+        const statusEl = document.getElementById('apiResponseStatus');
+        const timeEl = document.getElementById('apiResponseTime');
+        const bodyEl = document.getElementById('apiResponseBody');
+
+        statusEl.textContent = 'Отправка...';
+        bodyEl.textContent = 'Ожидание ответа...';
+
+        const startTime = performance.now();
+
+        try {
+            const headers = {};
+            if (token) {
+                headers['Authorization'] = 'Bearer ' + token;
+            }
+
+            const options = { method, headers };
+
+            if ((method === 'POST' || method === 'PUT') && bodyText) {
+                headers['Content-Type'] = 'application/json';
+                options.body = bodyText;
+            }
+
+            const res = await fetch(url, options);
+            const endTime = performance.now();
+            timeEl.textContent = Math.round(endTime - startTime) + ' мс';
+
+            statusEl.textContent = res.status + ' ' + res.statusText;
+
+            let data;
+            const text = await res.text();
+            try {
+                data = JSON.parse(text);
+                bodyEl.textContent = JSON.stringify(data, null, 2);
+
+                if (url.includes('/login') && data.token) {
+                    document.getElementById('apiToken').value = data.token;
+                }
+            } catch {
+                bodyEl.textContent = text;
+            }
+        } catch (err) {
+            statusEl.textContent = 'Ошибка сети';
+            bodyEl.textContent = err.toString();
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const token = getAuthToken();
+        if (token) document.getElementById('apiToken').value = token;
+        applyPreset();
+    });
+</script>
+}
